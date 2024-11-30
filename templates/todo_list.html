@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEJv1Xg6T7VGRa7mnYp4B6pMxK+qzfm3vdlFFbwnZmXrZxXJwbsQHt2cvVRhI" crossorigin="anonymous">
+    <style>
+        /* Personalización global */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f3f4f6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+        .container-fluid {
+            padding: 0;
+            display: flex;
+            flex-direction: row;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #1a73e8;
+            color: white;
+            height: 100vh;
+            padding-top: 30px;
+            padding-left: 15px;
+            position: fixed;
+            left: 0;
+            top: 0;
+        }
+        .sidebar h2 {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+        }
+        .sidebar a {
+            color: white;
+            font-size: 1.1rem;
+            text-decoration: none;
+            margin-bottom: 15px;
+            display: block;
+            transition: color 0.3s;
+        }
+        .sidebar a:hover {
+            color: #d3d3d3;
+        }
+        .main-container {
+            margin-left: 250px;
+            padding: 30px;
+            width: 100%;
+            overflow: auto;
+        }
+        .content-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .task {
+            background-color: #ffffff;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .task:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 30px rgba(0, 0, 0, 0.1);
+        }
+        .task-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+        .status-circle {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 10px;
+        }
+        .legend-pendiente { background-color: #ff3b30; }
+        .legend-en-progreso { background-color: #ff9500; }
+        .legend-completada { background-color: #4cd964; }
+        .legend-no-hechas { background-color: #8e8e93; }
+        .task-details {
+            font-size: 1rem;
+            color: #666;
+            margin-top: 10px;
+        }
+        .btn-custom {
+            background-color: #1a73e8;
+            color: white;
+            border-radius: 30px;
+            padding: 12px 20px;
+            font-size: 1.1rem;
+            border: none;
+            transition: background-color 0.3s, transform 0.2s ease;
+            width: 100%;
+        }
+        .btn-custom:hover {
+            background-color: #0f5bb5;
+            transform: scale(1.05);
+        }
+        .form-group {
+            margin-bottom: 25px;
+        }
+        .form-control {
+            border-radius: 30px;
+            padding: 15px;
+            font-size: 1.1rem;
+            border: 2px solid #ddd;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+        .form-control:focus {
+            border-color: #1a73e8;
+            box-shadow: 0 0 10px rgba(26, 115, 232, 0.5);
+        }
+        @media (max-width: 768px) {
+            .container-fluid {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                padding: 20px;
+            }
+            .main-container {
+                margin-left: 0;
+            }
+            .content-container {
+                padding: 20px;
+            }
+            .task-header {
+                font-size: 1.1rem;
+            }
+            .btn-custom {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="sidebar">
+        <h2>Mis Tareas</h2>
+        <a href="#">Hoy</a>
+        <a href="#">Esta semana</a>
+        <a href="#">Listas</a>
+        <a href="#">Importar</a>
+    </div>
+
+    <div class="main-container">
+        <div class="content-container">
+            <h2>To-Do List</h2>
+
+            <form method="post">
+                <div class="form-group">
+                    <input type="text" class="form-control" name="description" placeholder="Descripción de la tarea" required>
+                </div>
+                <div class="form-group">
+                    <select class="form-control" name="priority" required>
+                        <option value="Baja">Baja</option>
+                        <option value="Media">Media</option>
+                        <option value="Alta">Alta</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <input type="datetime-local" class="form-control" name="due_datetime" required>
+                </div>
+                <button type="submit" class="btn btn-custom">Añadir Tarea</button>
+            </form>
+
+            <div class="task-list mt-4">
+                <h3 class="text-left">Tus Tareas</h3>
+
+                {% for task in tasks %}
+                    <div class="task">
+                        <div class="task-header">
+                            <div class="d-flex align-items-center">
+                                <span>{{ task.description }}</span>
+                                <div class="status-circle 
+                                    {% if task.status == 'Pendiente' %} legend-pendiente
+                                    {% elif task.status == 'En Progreso' %} legend-en-progreso
+                                    {% elif task.status == 'Completada' %} legend-completada
+                                    {% elif task.status == 'No Hechas' %} legend-no-hechas
+                                    {% endif %}"></div>
+                            </div>
+                            <span>{{ task.priority }}</span>
+                        </div>
+                        <div class="task-details">
+                            Fecha de vencimiento: {{ task.due_datetime }}<br>
+                            Estado: {{ task.status }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

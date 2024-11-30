@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Actualizar Prioridad</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .btn {
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            border-radius: 4px;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Actualizar Prioridad de la Tarea</h2>
+
+    <form method="post">
+        <label for="priority">Selecciona la nueva prioridad:</label>
+        <select name="priority" id="priority" required>
+            <option value="Baja" {% if task.priority == 'Baja' %}selected{% endif %}>Baja</option>
+            <option value="Media" {% if task.priority == 'Media' %}selected{% endif %}>Media</option>
+            <option value="Alta" {% if task.priority == 'Alta' %}selected{% endif %}>Alta</option>
+
+        </select>
+        
+        <button type="submit" class="btn">Actualizar Prioridad</button>
+    </form>
+
+    <br>
+    <p><a href="{{ url_for('todo_list') }}">Volver al To-Do List</a></p>
+</div>
+
+</body>
+</html>
