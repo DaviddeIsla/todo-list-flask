@@ -114,6 +114,7 @@ def todo_list():
         flash("Inicia sesión para acceder al To-Do List", "warning")
         return redirect(url_for('login'))
 
+        user_id = session['user_id']  # Obtener el user_id desde la sesión
     conn = create_connection()
     cursor = conn.cursor(dictionary=True)
 
@@ -152,6 +153,41 @@ def todo_list():
     conn.close()
 
     return render_template('todo_list.html', tasks=tasks)
+
+# Ruta para actualizar la tarea
+@app.route('/update_task/<int:task_id>', methods=['POST'])
+def update_task(task_id):
+    if 'user_id' not in session:
+        flash("Inicia sesión para modificar las tareas", "warning")
+        return redirect(url_for('login'))
+
+    description = request.form.get('description')
+    priority = request.form.get('priority')
+    due_datetime = request.form.get('due_datetime')
+
+    if not description or not priority or not due_datetime:
+        flash("Todos los campos son obligatorios.", "danger")
+        return redirect(url_for('todo_list'))
+
+    conn = create_connection()
+    if conn:
+        cursor = conn.cursor()
+        try:
+            cursor.execute("""
+                UPDATE tasks
+                SET description = %s, priority = %s, due_datetime = %s
+                WHERE id = %s AND user_id = %s
+            """, (description, priority, due_datetime, task_id, session['user_id']))
+            conn.commit()
+            flash("Tarea actualizada exitosamente.", "success")
+        except Error as e:
+            flash(f"Error al actualizar la tarea: {e}", "danger")
+        finally:
+            cursor.close()
+            conn.close()
+
+    return redirect(url_for('todo_list'))
+
 
 # Ruta para actualizar la prioridad de una tarea
 @app.route('/update_priority/<int:task_id>', methods=['GET', 'POST'])
@@ -240,6 +276,39 @@ def logout():
     flash("Sesión cerrada", "success")
     return redirect(url_for('login'))
 
+import sys
+import pymysql
+
+def get_db_connection():
+    try:
+        if "pythonanywhere" in sys.argv:
+            # Configuración para PythonAnywhere
+            connection = pymysql.connect(
+                host='daviddeisla7.mysql.pythonanywhere-services.com',  # Host correcto para PythonAnywhere
+                user='daviddeisla7',  # Tu usuario de base de datos en PythonAnywhere
+                password='Sevilla77.',  # Tu contraseña de base de datos en PythonAnywhere
+                database='to_do_list',  # El nombre de tu base de datos
+                cursorclass=pymysql.cursors.DictCursor
+            )
+        else:
+            # Configuración para XAMPP (local)
+            connection = pymysql.connect(
+                host="localhost",  # Usamos localhost en desarrollo local
+                user="root",  # Usuario predeterminado de XAMPP
+                password="",  # XAMPP no tiene contraseña por defecto
+                database="to_do_list"  # Asegúrate de que la base de datos existe localmente
+            )
+
+        print("Conexión a la base de datos establecida.")
+        return connection
+
+    except pymysql.MySQLError as err:
+        print(f"Error al conectar a la base de datos: {err}")
+        return None
+    except Exception as e:
+        print(f"Ha ocurrido un error inesperado: {e}")
+        return None
+
+
 if __name__ == '__main__':
     app.run(debug=True)
-

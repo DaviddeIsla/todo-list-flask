@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inicio de Sesión</title>
+    <title>Registro de Usuario</title>
     <style>
         /* Estilos generales */
         * {
@@ -44,7 +44,7 @@
         }
 
         /* Estilos de los campos de entrada */
-        input[type="text"], input[type="password"] {
+        input[type="text"], input[type="password"], input[type="email"] {
             width: 100%;
             padding: 12px;
             margin: 10px 0;
@@ -57,14 +57,14 @@
         }
 
         /* Efecto de foco en los campos de entrada */
-        input[type="text"]:focus, input[type="password"]:focus {
+        input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus {
             border-color: #4CAF50;
             background-color: #fff;
             outline: none;
             box-shadow: 0 0 5px rgba(76, 175, 80, 0.6);
         }
 
-        /* Botón de inicio de sesión */
+        /* Botón de registro */
         button {
             width: 100%;
             padding: 12px;
@@ -154,17 +154,23 @@
 </head>
 <body>
     <div class="container">
-        <h2>Inicio de Sesión</h2>
-        <form action="{{ url_for('login') }}" method="post">
+        <h2>Registro de Usuario</h2>
+        <form action="{{ url_for('register') }}" method="post">
             <label for="usuario">Nombre de Usuario:</label>
             <input type="text" id="usuario" name="usuario" required>
+
+            <label for="correo">Correo Electrónico:</label>
+            <input type="email" id="correo" name="correo" required>
 
             <label for="contraseña">Contraseña:</label>
             <input type="password" id="contraseña" name="contraseña" required>
 
-            <button type="submit">Iniciar Sesión</button>
+            <label for="confirm_contraseña">Confirmar Contraseña:</label>
+            <input type="password" id="confirm_contraseña" name="confirm_contraseña" required>
+
+            <button type="submit">Registrar</button>
         </form>
-        <p>¿No tienes cuenta? <a href="{{ url_for('register') }}">Regístrate aquí.</a></p>
+        <p>¿Ya tienes cuenta? <a href="{{ url_for('login') }}">Inicia sesión aquí.</a></p>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% for category, message in messages %}
